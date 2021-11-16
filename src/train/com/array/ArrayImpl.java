@@ -1,17 +1,19 @@
 package train.com.array;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class ArrayImpl implements Array {
-    private Object[] arr = new Object[3];
+    private Object[] arr = new Object[10];
     //size=lastnamber+1;
     private int size = 0;
 
     @Override
     public void clear() {
+        for (int i = 0; i < size; i++) {
+            arr[i] = null;
+        }
         size = 0;
     }
 
@@ -22,8 +24,7 @@ public class ArrayImpl implements Array {
 
     @Override
     public Iterator<Object> iterator() {
-        IteratorImpl iterator = new IteratorImpl(arr, size);
-        return iterator;
+        return new IteratorImpl();
     }
 
     @Override
@@ -37,16 +38,9 @@ public class ArrayImpl implements Array {
 
     @Override
     public void set(int index, Object element) {
-        if (size == arr.length) {
-            increaseSize();
+        if (index >= 0 & index < size) {
+            arr[index] = element;
         }
-        Object buf = arr[index];
-        arr[index] = element;
-        for (int i = size; i > index + 1; i--) {
-            arr[i] = arr[i - 1];
-        }
-        arr[index + 1] = buf;
-        size++;
     }
 
     @Override
@@ -79,23 +73,19 @@ public class ArrayImpl implements Array {
 
     @Override
     public String toString() {
-        if (size == 0) {
-            return "[]";
-        }
         String out = "[";
-        for (int i = 0; i < size - 1; i++) {
-            out += arr[i] + ", ";
+        for (int i = 0; i < size; i++) {
+            if (i != size - 1) {
+                out += arr[i] + ", ";
+            } else
+                out += arr[i];
         }
-        out += arr[size - 1] + "]";
+        out += "]";
         return out;
     }
 
     private void increaseSize() {
-        Object[] arr2 = new Object[arr.length * 2];
-        for (int i = 0; i < arr.length; i++) {
-            arr2[i] = arr[i];
-        }
-        arr = arr2;
+        arr = Arrays.copyOf(arr, arr.length * 2);
     }
 
     public static void main(String[] args) {
@@ -110,7 +100,7 @@ public class ArrayImpl implements Array {
         System.out.println("size result: " + arr.size());
         arr.set(2, "K");
         System.out.println("set result: " + arr);
-        System.out.println("get result: " +arr.get(2));
+        System.out.println("get result: " + arr.get(2));
         System.out.println("indexOf result: " + arr.indexOf("E"));
         arr.remove(1);
         System.out.println("remove result: " + arr);
@@ -127,15 +117,7 @@ public class ArrayImpl implements Array {
 
 
     class IteratorImpl implements Iterator {
-        private Object[] arr;
-        private int size;
-        private int iter;
-
-        public IteratorImpl(Object[] arr, int size) {
-            this.arr = arr;
-            this.size = size;
-            iter = 0;
-        }
+        private int iter = 0;
 
         @Override
         public boolean hasNext() {
@@ -147,7 +129,7 @@ public class ArrayImpl implements Array {
 
         @Override
         public Object next() {
-            if (iter >= size) {
+            if (!hasNext()) {
                 throw new NoSuchElementException("array out of bounds");
             }
             Object nextElem = arr[iter];
