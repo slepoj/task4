@@ -1,6 +1,7 @@
 package train.com.list;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 public class ListImpl implements List {
@@ -10,8 +11,13 @@ public class ListImpl implements List {
 
     @Override
     public void clear() {
-        nodeLast = null;
-        nodeFirst = null;
+        Node itr = nodeFirst;
+        while (itr.nextNode != null) {
+            itr = itr.nextNode;
+            itr.prevsNode.nextNode = null;
+            itr.prevsNode.prevsNode = null;
+            itr.prevsNode.obj = null;
+        }
     }
 
     @Override
@@ -21,110 +27,144 @@ public class ListImpl implements List {
 
     @Override
     public Iterator<Object> iterator() {
-        IteratorImpl iter = new IteratorImpl(nodeFirst);
-        return iter;
+        return new IteratorImpl();
     }
 
     @Override
     public void addFirst(Object element) {
-        if (nodeFirst == null){
-            Node node = new Node(element);
-            nodeFirst = node;
-            nodeLast = node;
-            size++;
-            return;
-        }
         Node node = new Node(element, nodeFirst, null);
-        nodeFirst.setPrevsNode(node);
+        if (nodeLast == null) {
+            nodeLast = node;
+        } else nodeFirst.prevsNode = node;
         nodeFirst = node;
         size++;
     }
 
     @Override
     public void addLast(Object element) {
-        if (nodeLast == null){
-            addFirst(element);
-            return;
-        }
         Node node = new Node(element, null, nodeLast);
-        nodeLast.setNextNode(node);
+        if (nodeLast == null) {
+            nodeFirst = node;
+        } else nodeLast.nextNode = node;
         nodeLast = node;
         size++;
     }
 
     @Override
     public void removeFirst() {
-        nodeFirst = nodeFirst.getNextNode();
-        nodeFirst.setPrevsNode(null);
+        if (nodeFirst != null) {
+            if (nodeFirst.equals(nodeLast)) {
+                nodeFirst = null;
+                nodeLast = null;
+            } else {
+                nodeFirst = nodeFirst.nextNode;
+                nodeFirst.prevsNode = (null);
+            }
+            size--;
+        }
     }
 
     @Override
     public void removeLast() {
-        nodeLast = nodeLast.getPrevsNode();
-        nodeLast.setNextNode(null);
+        if (nodeFirst != null) {
+            if (nodeFirst.equals(nodeLast)) {
+                nodeFirst = null;
+                nodeLast = null;
+            } else {
+                nodeLast = nodeLast.prevsNode;
+                nodeLast.nextNode = (null);
+            }
+            size--;
+        }
     }
 
     @Override
     public Object getFirst() {
-        return nodeFirst;
+        return nodeFirst.obj;
     }
 
     @Override
     public Object getLast() {
-        return nodeLast;
+        return nodeLast.obj;
     }
 
     @Override
     public Object search(Object element) {
         Node itr = nodeFirst;
-        while (itr!=null){
-            if (itr.getObj().equals(element)){
-                return itr;
-            } itr = itr.getNextNode();
+        while (itr != null) {
+            if (itr.obj.equals(element)) {
+                return itr.obj;
+            }
+            itr = itr.nextNode;
         }
         return null;
     }
 
     @Override
     public boolean remove(Object element) {
-        if (nodeFirst.getObj().equals(element)){
+        Node itr = nodeFirst;
+        for (; itr != null; itr = itr.nextNode) {
+            if (itr.obj.equals(element)) {
+                unlink(itr);
+            }
+        }
+
+        /*if (nodeFirst.obj.equals(element)) {
             removeFirst();
             return true;
         }
-        if (nodeLast.getObj().equals(element)){
+        if (nodeLast.obj.equals(element)) {
             removeLast();
             return true;
         }
         Node itr = nodeFirst;
-        while (itr!=null){
-            if (itr.getObj().equals(element)){
-                itr.getPrevsNode().setNextNode(itr.getNextNode());
-                itr.getNextNode().setPrevsNode(itr.getPrevsNode());
+        while (itr != null) {
+            if (itr.obj.equals(element)) {
+                itr.prevsNode.nextNode = itr.nextNode;
+                itr.nextNode.prevsNode = itr.prevsNode;
                 return true;
-            } itr = itr.getNextNode();
-        }
+            }
+            itr = itr.nextNode;
+        }*/
         return false;
+    }
+
+    private void unlink(Node delEL) {
+        if (delEL.prevsNode == null) {
+            nodeFirst = delEL.nextNode;
+        } else
+            delEL.prevsNode.nextNode = delEL.nextNode;
+        if (delEL.nextNode == null) {
+            nodeLast = delEL.prevsNode;
+        } else
+            delEL.nextNode.prevsNode = delEL.prevsNode;
+
+        delEL.prevsNode = null;
+        delEL.nextNode = null;
+        delEL.obj = null;
+        size--;
     }
 
     @Override
     public String toString() {
         String str = "[";
         Node itr = nodeFirst;
-        while (itr!=null){
-            if (itr.getNextNode() == null){
-                str += itr.getObj() + "]";
-                return str;
-            } str += itr.getObj() + ", ";
-            itr = itr.getNextNode();
-        } str += "]";
+        while (itr != null) {
+            if (itr.nextNode == null) {
+                str += itr.obj;
+            } else str += itr.obj + ", ";
+            itr = itr.nextNode;
+        }
+        str += "]";
         return str;
     }
 
     public static void main(String[] args) {
         ListImpl list = new ListImpl();
-        list.addFirst("A");
-        list.addLast("B");
-        list.addLast("C");
+        LinkedList list1 = new LinkedList<>();
+        /*list.addFirst("A");
+        list.addFirst("B");
+        list.addFirst("C");
         list.addLast("D");
         list.addLast("E");
         System.out.println(list);
@@ -135,41 +175,35 @@ public class ListImpl implements List {
         System.out.println("remove result: " + list);
         System.out.println("getFirst result: " + list.getFirst());
         System.out.println("getLast result: " + list.getLast());
-        Node serh = (Node) list.search("D");
-        System.out.println("search result: " + serh.getObj());
+        System.out.println("search result: " + list.search("D"));
         System.out.println("work with iterator: ");
         Iterator iterator = list.iterator();
-        while (iterator.hasNext()){
-            System.out.print(iterator.next()+ " ");
+        while (iterator.hasNext()) {
+            System.out.print(iterator.next() + " ");
         }
         System.out.println();
         list.clear();
-        System.out.println("clear result: " + list);
-
+        System.out.println("clear result: " + list);*/
     }
 
     class IteratorImpl implements Iterator {
-        private Node iter;
-
-        public IteratorImpl(Node iter) {
-            this.iter = iter;
-        }
+        private Node iter = nodeFirst;
 
         @Override
         public boolean hasNext() {
-            if (iter != null){
+            if (iter != null) {
                 return true;
             } else
-            return false;
+                return false;
         }
 
         @Override
         public Object next() {
-            if (iter == null){
+            if (!hasNext()) {
                 throw new NoSuchElementException("array out of bounds");
             }
             Node nextNode = iter;
-            iter = nextNode.getNextNode();
+            iter = nextNode.nextNode;
             return nextNode.obj;
         }
 
@@ -180,38 +214,14 @@ public class ListImpl implements List {
 
     }
 
-    static class Node {
+    private static class Node {
         private Object obj;
-        private Node nextNode = null;
-        private Node prevsNode = null;
-
-        public Node(Object obj) {
-            this.obj = obj;
-        }
+        private Node nextNode;
+        private Node prevsNode;
 
         public Node(Object obj, Node nextNode, Node prevsNode) {
             this.obj = obj;
             this.nextNode = nextNode;
-            this.prevsNode = prevsNode;
-        }
-
-        public Object getObj() {
-            return obj;
-        }
-
-        public Node getNextNode() {
-            return nextNode;
-        }
-
-        public void setNextNode(Node nextNode) {
-            this.nextNode = nextNode;
-        }
-
-        public Node getPrevsNode() {
-            return prevsNode;
-        }
-
-        public void setPrevsNode(Node prevsNode) {
             this.prevsNode = prevsNode;
         }
     }
