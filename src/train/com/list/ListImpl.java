@@ -35,7 +35,9 @@ public class ListImpl implements List {
         Node node = new Node(element, nodeFirst, null);
         if (nodeLast == null) {
             nodeLast = node;
-        } else nodeFirst.prevsNode = node;
+        } else {
+            nodeFirst.prevsNode = node;
+        }
         nodeFirst = node;
         size++;
     }
@@ -45,7 +47,9 @@ public class ListImpl implements List {
         Node node = new Node(element, null, nodeLast);
         if (nodeLast == null) {
             nodeFirst = node;
-        } else nodeLast.nextNode = node;
+        } else {
+            nodeLast.nextNode = node;
+        }
         nodeLast = node;
         size++;
     }
@@ -106,26 +110,9 @@ public class ListImpl implements List {
         for (; itr != null; itr = itr.nextNode) {
             if (itr.obj.equals(element)) {
                 unlink(itr);
-            }
-        }
-
-        /*if (nodeFirst.obj.equals(element)) {
-            removeFirst();
-            return true;
-        }
-        if (nodeLast.obj.equals(element)) {
-            removeLast();
-            return true;
-        }
-        Node itr = nodeFirst;
-        while (itr != null) {
-            if (itr.obj.equals(element)) {
-                itr.prevsNode.nextNode = itr.nextNode;
-                itr.nextNode.prevsNode = itr.prevsNode;
                 return true;
             }
-            itr = itr.nextNode;
-        }*/
+        }
         return false;
     }
 
@@ -152,7 +139,9 @@ public class ListImpl implements List {
         while (itr != null) {
             if (itr.nextNode == null) {
                 str += itr.obj;
-            } else str += itr.obj + ", ";
+            } else {
+                str += itr.obj + ", ";
+            }
             itr = itr.nextNode;
         }
         str += "]";
