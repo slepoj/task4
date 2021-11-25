@@ -89,6 +89,7 @@ public class ArrayImpl implements Array {
     }
 
     public static void main(String[] args) {
+        System.out.println("Array demo:");
         ArrayImpl arr = new ArrayImpl();
         arr.add("A");
         arr.add("B");
@@ -112,7 +113,7 @@ public class ArrayImpl implements Array {
         System.out.println();
         arr.clear();
         System.out.println("clear result: " + arr);
-
+        System.out.println();
     }
 
 

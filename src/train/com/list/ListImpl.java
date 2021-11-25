@@ -149,6 +149,7 @@ public class ListImpl implements List {
     }
 
     public static void main(String[] args) {
+        System.out.println("List demo:");
         ListImpl list = new ListImpl();
         LinkedList list1 = new LinkedList<>();
         list.addFirst("A");
@@ -173,6 +174,7 @@ public class ListImpl implements List {
         System.out.println();
         list.clear();
         System.out.println("clear result: " + list);
+        System.out.println();
     }
 
     class IteratorImpl implements Iterator {

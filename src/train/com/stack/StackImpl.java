@@ -1,11 +1,10 @@
-package train.com.queue;
+package train.com.stack;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class QueueImpl implements Queue {
+public class StackImpl implements Stack {
     private Node head;
-    private Node last;
     private int size = 0;
 
 
@@ -16,7 +15,6 @@ public class QueueImpl implements Queue {
             itr.obj = null;
             itr.nextNode = null;
         }
-        last = null;
         size = 0;
     }
 
@@ -31,19 +29,17 @@ public class QueueImpl implements Queue {
     }
 
     @Override
-    public void enqueue(Object element) {
+    public void push(Object element) {
         Node node = new Node(element, null);
-        if (last == null){
-            head = node;
-        } else {
-            last.nextNode = node;
+        if (head != null){
+            node.nextNode= head;
         }
-        last = node;
+        head = node;
         size++;
     }
 
     @Override
-    public Object dequeue() {
+    public Object pop() {
         Object obj = head.obj;
         head = head.nextNode;
         size--;
@@ -57,42 +53,42 @@ public class QueueImpl implements Queue {
 
     @Override
     public String toString() {
-        String str = "[";
+        String str = "";
         Node itr = head;
         while (itr != null){
-            if (itr.nextNode != null){
-                str += itr.obj + ", ";
+            if (!str.equals("")){
+                str = itr.obj + ", " + str;
             } else {
-                str += itr.obj;
+                str = itr.obj + str;
             }
             itr = itr.nextNode;
         }
-        str += "]";
+        str ="[" + str + "]";
         return str;
     }
 
     public static void main(String[] args) {
-        System.out.println("Queue demo:");
-        QueueImpl queue = new QueueImpl();
-        queue.enqueue("A");
-        queue.enqueue("B");
-        queue.enqueue("C");
-        queue.enqueue("D");
-        queue.enqueue("E");
-        queue.enqueue("F");
-        System.out.println(queue);
-        System.out.println("size result: " + queue.size);
-        System.out.println("top result: " + queue.top());
-        System.out.println("dequeue result: " + queue.dequeue());
-        System.out.println(queue);
+        System.out.println("Stack demo:");
+        StackImpl stack = new StackImpl();
+        stack.push("A");
+        stack.push("B");
+        stack.push("C");
+        stack.push("D");
+        stack.push("E");
+        stack.push("F");
+        System.out.println(stack);
+        System.out.println("size result: " + stack.size);
+        System.out.println("top result: " + stack.top());
+        System.out.println("pop result: " + stack.pop());
+        System.out.println(stack);
         System.out.println("iterator result:");
-        Iterator itr = queue.iterator();
+        Iterator itr = stack.iterator();
         while (itr.hasNext()){
             System.out.print(itr.next() + " ");
         }
         System.out.println();
-        queue.clear();
-        System.out.println("clear result: " + queue);
+        stack.clear();
+        System.out.println("clear result: " + stack);
         System.out.println();
     }
 
@@ -133,5 +129,4 @@ public class QueueImpl implements Queue {
         }
 
     }
-
 }
